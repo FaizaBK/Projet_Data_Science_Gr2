@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import cross_val_score, train_test_split
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge
 import matplotlib.pyplot as plt
 
 
@@ -240,3 +240,53 @@ ax_r2.set_ylabel('R²')
 ax_r2.set_title('Comparison of R² Scores: Cross-Validation, Test, and Train Sets')
 ax_r2.legend()
 st.pyplot(fig_r2)
+
+#### Model 4: Ridge Regression
+st.write("***Model 4: Ridge Regression")
+
+X = df.drop(columns=['target'])
+y = df['target']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+#Show shapes data
+st.write(f"Training data shape: {X_train.shape}")
+st.write(f"Test data shape: {X_test.shape}")
+st.write(f"Training labels shape: {y_train.shape}")
+st.write(f"Test labels shape: {y_test.shape}")
+
+#Inisialization Model Ridge 
+model = Ridge(alpha=0.1)
+
+#Train model 
+model.fit(X_train, y_train)
+
+#Show shapes coeeficients
+st.write("Model Coefficients: ", model.coef_)
+st.write("Model Intercept: ", model.intercept_)
+
+#Predictions 
+y_train_pred = model.predict(X_train)
+y_test_pred = model.predict(X_test)
+
+#Calculate mse and r2
+train_mse = mean_squared_error(y_train, y_train_pred)
+train_r2 = r2_score(y_train, y_train_pred)
+test_mse = mean_squared_error(y_test, y_test_pred)
+test_r2 = r2_score(y_test, y_test_pred)
+
+#Displayin reuslts in streamlit 
+st.write(f"Training Mean Squared Error (MSE): {train_mse}")
+st.write(f"Training R²: {train_r2}")
+st.write(f"Test Mean Squared Error (MSE): {test_mse}")
+st.write(f"Test R²: {test_r2}")
+
+#Visulaization of results
+fig_ridge, ax = plt.subplots(figsize=(10, 6))
+ax.scatter(y_test, y_test_pred, color='blue', label="Predictions vs True values")
+ax.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], color='red', linewidth=2, label="Perfect Prediction")
+ax.set_xlabel('True Values')
+ax.set_ylabel('Predictions')
+ax.set_title('True Values vs Predictions for Test Set')
+ax.legend()
+st.pyplot(fig_ridge)
