@@ -2,6 +2,7 @@
 import streamlit as st
 from sections.classification.classification import classification_page
 from sections.nailsdetection.nails import nail_page
+from sections.regression.regression2 import regression2_page
 from sections.regression.regression import regression_page
 
 st.set_page_config(
@@ -13,11 +14,13 @@ st.set_page_config(
 
 type_data = st.sidebar.radio(
     "Choisissez votre type de playground",
-    ["Regression", "Classification", "NailsDetection"]
+    ["Regression", "Regression2", "Classification", "NailsDetection"]
 )
 
 if type_data == "Regression":
     regression_page()
+elif type_data == "Regression2":
+    regression2_page()
 elif type_data == "Classification":
     classification_page()
 elif type_data == "NailsDetection":
