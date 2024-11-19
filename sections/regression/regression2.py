@@ -57,16 +57,19 @@ def analyse_dataframe():
         target_corr = correlation_matrix["target"].sort_values(ascending=False)
         st.write("Corrélation avec la cible (target):")
         st.write(target_corr)
+        threshold = st.slider(
+            "Veuillez entrer un seuil de corrélation pour sélectionner les features", 
+            min_value=-0.6, max_value=0.6, value=0.0, step=0.01)
 
-        selected_features = target_corr[target_corr >= 0.40].index.tolist()
+        selected_features = target_corr[target_corr >= threshold].index.tolist()
         selected_features.remove('target')
-        st.write("Features sélectionnées avec une corrélation >= 0.40 avec la cible :")
+        st.write(f"Features sélectionnées avec une corrélation >= {threshold} avec la cible :")
         st.write(selected_features)
         
         st.session_state.selected_features = selected_features
 
 def train_model(model, model_name):
-    """Generic function to train and evaluate a model"""
+    """Generic function to train, evaluate, and plot model performance."""
     if 'data' in st.session_state:
         data = st.session_state.data
         selected_features = st.session_state.selected_features if 'selected_features' in st.session_state else data.columns.tolist()
@@ -74,10 +77,14 @@ def train_model(model, model_name):
         X = data[selected_features]
         y = data['target']
         
+        # Split data into training and testing sets
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+        
+        # Train the model
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
         
+        # Evaluation metrics
         mse = mean_squared_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
         
@@ -85,8 +92,27 @@ def train_model(model, model_name):
         st.write(f"{model_name} - R²: {r2}")
         st.write(f"{model_name} - Train score: {model.score(X_train, y_train)}")
         st.write(f"{model_name} - Test score: {model.score(X_test, y_test)}")
+        
+        # Plot predictions vs actual values
+        fig, ax = plt.subplots()
+        ax.scatter(y_test, y_pred, alpha=0.5)
+        ax.plot([y.min(), y.max()], [y.min(), y.max()], 'r--', linewidth=2)
+        ax.set_xlabel("Valeurs réelles")
+        ax.set_ylabel("Prédictions")
+        ax.set_title(f"{model_name} - Prédictions vs Valeurs réelles")
+        st.pyplot(fig)
+        
+        # Plot distribution of residuals
+        residuals = y_test - y_pred
+        fig, ax = plt.subplots()
+        sns.histplot(residuals, kde=True, ax=ax)
+        ax.set_title(f"{model_name} - Distribution des résidus")
+        ax.set_xlabel("Erreur (résidus)")
+        st.pyplot(fig)
+        
     else:
         st.error("Les données traitées sont introuvables. Veuillez d'abord les traiter et analyser.")
+
 
 def linear_dataframe():
     """Run linear regression."""
