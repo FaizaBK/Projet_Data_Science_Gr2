@@ -6,8 +6,8 @@ from sections.regression.regression2 import regression2_page
 from sections.regression.regression import regression_page
 
 st.set_page_config(
-    page_title="Playground ML",
-    page_icon="🧊",
+    page_title="ProjectDataScience",
+    page_icon=":shark:",
     layout="wide",
     initial_sidebar_state="expanded",
 )

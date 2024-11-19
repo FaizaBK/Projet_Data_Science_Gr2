@@ -4,13 +4,15 @@ import os
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Lasso
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.tree import DecisionTreeRegressor
 
 base_path = os.path.dirname(os.path.abspath(__file__))
 data_path = os.path.join(base_path, '../../data/diabete.csv')
+
+
 
 def load_data():
     """Load data and delete col"""
@@ -51,6 +53,7 @@ def analyse_dataframe():
         st.write("Analyse des corrélations")
         correlation_matrix = data.corr()
         fig, ax = plt.subplots(figsize=(10, 8))
+        ax.set_title("Matrice de corrélations")
         sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f", ax=ax)
         st.pyplot(fig)
 
@@ -59,7 +62,7 @@ def analyse_dataframe():
         st.write(target_corr)
         threshold = st.slider(
             "Veuillez entrer un seuil de corrélation pour sélectionner les features", 
-            min_value=-0.6, max_value=0.6, value=0.0, step=0.01)
+            min_value=-0.6, max_value=1.0, value=0.0, step=0.01)
 
         selected_features = target_corr[target_corr >= threshold].index.tolist()
         selected_features.remove('target')
@@ -93,41 +96,90 @@ def train_model(model, model_name):
         st.write(f"{model_name} - Train score: {model.score(X_train, y_train)}")
         st.write(f"{model_name} - Test score: {model.score(X_test, y_test)}")
         
-        # Plot predictions vs actual values
-        fig, ax = plt.subplots()
-        ax.scatter(y_test, y_pred, alpha=0.5)
-        ax.plot([y.min(), y.max()], [y.min(), y.max()], 'r--', linewidth=2)
-        ax.set_xlabel("Valeurs réelles")
-        ax.set_ylabel("Prédictions")
-        ax.set_title(f"{model_name} - Prédictions vs Valeurs réelles")
+        
+        # Plot predictions and actual values
+        fig, ax = plt.subplots(figsize=(10, 6))
+        # Value reel en bleu
+        ax.scatter(np.arange(len(y_test)), y_test, color='blue', label="Valeurs réelles")
+        # Value predict en rouge
+        ax.scatter(np.arange(len(y_pred)), y_pred, color='red', label="Valeurs prédites")
+        ax.set_title("Valeurs réelles et prédites")
+        ax.set_xlabel("Index des observations")
+        ax.set_ylabel("Valeurs")
+        ax.legend()
         st.pyplot(fig)
         
-        # Plot distribution of residuals
-        residuals = y_test - y_pred
-        fig, ax = plt.subplots()
-        sns.histplot(residuals, kde=True, ax=ax)
-        ax.set_title(f"{model_name} - Distribution des résidus")
-        ax.set_xlabel("Erreur (résidus)")
-        st.pyplot(fig)
+        row1Col1,row1Col2 = st.columns(2)
+        with row1Col1:
+        # Plot predictions vs actual values
+        # 'plasma', 'inferno', 'magma
+            fig, ax = plt.subplots()
+            scatter = ax.scatter(y_test, y_pred, alpha=0.5, c=y_test, cmap='viridis', label="Prédictions vs Réelles")
+            fig.colorbar(scatter, ax=ax, label='Valeurs réelles (y_test)')
+            ax.plot([y.min(), y.max()], [y.min(), y.max()], color='red', linewidth=2, label="Référence")
+            ax.set_xlabel("Valeurs réelles")
+            ax.set_ylabel("Prédictions")
+            ax.set_title(f"{model_name} - Prédictions vs Valeurs réelles")
+            ax.legend()
+            st.pyplot(fig)
+            
+        with row1Col2:
+            # Plot distribution of residuals
+            #  différence entre les valeurs réelle and prédict
+            residuals = y_test - y_pred
+            fig, ax = plt.subplots()
+            sns.histplot(residuals, kde=True, ax=ax, color='skyblue')
+            ax.set_title(f"{model_name} - Distribution des résidus")
+            ax.set_xlabel("Erreur (résidus)")
+            st.pyplot(fig)
+            
+        row2Col3, row2Col4 = st.columns(2)
+        with row2Col3:
+            # Plot distribution of the prediction -coolwarm
+            fig, ax = plt.subplots()
+            sns.histplot(y_pred, kde=True, ax=ax, color='green') 
+            ax.set_title(f"{model_name} - Distribution des prédictions")
+            ax.set_xlabel("Valeurs prédites")
+            ax.set_ylabel("Fréquence")
+            st.pyplot(fig)
+            
+        with row2Col4:
+            # Plot distribution of the reel value
+            fig, ax = plt.subplots()
+            sns.histplot(y_test, kde=True, ax=ax, color='orange') 
+            ax.set_title(f"{model_name} - Distribution des valeurs réelles")
+            ax.set_xlabel("Valeurs réelles")
+            ax.set_ylabel("Fréquence")
+            st.pyplot(fig)
         
     else:
         st.error("Les données traitées sont introuvables. Veuillez d'abord les traiter et analyser.")
 
 
 def linear_dataframe():
-    """Run linear regression."""
+    """Run linear regression"""
     analyse_dataframe()
     model = LinearRegression()
     train_model(model, "Régression Linéaire")
 
 def decision_tree_dataframe():
-    """Run decision tree regression."""
+    """Run decision tree regression"""
     analyse_dataframe()
     model = DecisionTreeRegressor(random_state=1000)
     train_model(model, "Arbre de Décision")
+    
+def lasso_dataframe():
+    """Run Lasso regression"""
+    analyse_dataframe()
+    # Controle la force de la régularisation
+    #  Previent du surapprentissage (overfit)
+    alpha = st.slider("Sélectionnez le paramètre alpha pour le modèle Lasso", min_value=0.01, max_value=1.0, value=0.1, step=0.01)
+    model = Lasso(alpha=alpha, random_state=42)
+    train_model(model, "Lasso")
 
+    
 def regression2_page():
-    """Main page layout."""
+    """Main page layout"""
     st.header("Bienvenue")
     st.caption("Bienvenue dans le Playground de Régression")
 
@@ -136,7 +188,7 @@ def regression2_page():
 
     options = st.selectbox(
         "Veuillez choisir un modèle",
-        ["", "Régression Linéaire", "Arbre de Décision"],
+        ["", "Régression Linéaire", "Arbre de Décision", "Lasso"],
         format_func=lambda x: "Sélectionnez un modèle" if x == "" else x
     )
 
@@ -146,3 +198,6 @@ def regression2_page():
     elif options == "Arbre de Décision":
         st.header("Arbre de Décision")
         decision_tree_dataframe()
+    elif options == "Lasso":
+        st.header("Lasso")
+        lasso_dataframe()
