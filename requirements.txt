@@ -6,7 +6,6 @@ certifi==2024.8.30
 charset-normalizer==3.3.2
 click==8.1.7
 colorama==0.4.6
-dotenv
 gitdb==4.0.11
 GitPython==3.1.43
 idna==3.8
@@ -28,6 +27,7 @@ pyarrow==17.0.0
 pydeck==0.9.1
 Pygments==2.18.0
 python-dateutil==2.9.0.post0
+python-dotenv
 pytz==2024.1
 referencing==0.35.1
 requests==2.32.3
