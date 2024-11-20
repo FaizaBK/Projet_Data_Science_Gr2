@@ -47,4 +47,4 @@ zipp==3.20.1
 matplotlib
 seaborn
 scikit-learn
-inference-sdk==1.2.3
+inference-sdk
