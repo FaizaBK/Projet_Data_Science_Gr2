@@ -48,3 +48,5 @@ matplotlib
 seaborn
 scikit-learn
 inference_sdk==0.9.17
+opencv
+c
