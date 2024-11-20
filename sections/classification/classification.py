@@ -142,7 +142,7 @@ def random_forest_model():
         ax.set_title("Précision par Classe")
         st.pyplot(fig)
 
-#Calassification page in streamlit   
+#Classification page in streamlit   
 def classification_page():
     st.header("Bienvenue")
     st.caption("Playground pour les modèles de classification")
@@ -152,7 +152,7 @@ def classification_page():
 
     options = st.sidebar.selectbox(
         "Choisissez un modèle",
-        ["Régression Logistique","Forêt Aléatoire", ], 
+        ["Régression Logistique","Forêt Aléatoire", "Arbre de Décision", "Réseau de Neurones"], 
         format_func=lambda x: "Sélectionnez un modèle" if x == "" else x,
     )
 
@@ -160,4 +160,5 @@ def classification_page():
         logistic_regression_model()
     elif  options == "Forêt Aléatoire":
         random_forest_model()
+    
     
