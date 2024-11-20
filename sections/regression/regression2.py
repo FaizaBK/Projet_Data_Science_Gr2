@@ -407,3 +407,5 @@ def regression2_page():
     elif options == "Cross Validation":
         st.header("Cross Validation")
         cross_validation_linear()
+
+    
