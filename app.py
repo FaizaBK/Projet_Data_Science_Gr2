@@ -1,8 +1,8 @@
 
 import streamlit as st
-from sections.classification.classification import classification_page
 from sections.nailsdetection.nails import nail_page
 from sections.regression.regression2 import regression2_page
+from sections.classification.classification2 import classification_page
 
 
 st.set_page_config(
