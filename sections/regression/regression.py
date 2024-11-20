@@ -13,7 +13,6 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 data_path = os.path.join(base_path, '../../data/diabete.csv')
 
 
-
 def load_data():
     """Load data and delete col"""
     if os.path.exists(data_path):
@@ -191,7 +190,6 @@ def train_model(model, model_name):
         
     else:
         st.error("Les données traitées sont introuvables. Veuillez d'abord les traiter et analyser.")
-
 
 def linear_dataframe():
     """Run linear regression"""
@@ -375,15 +373,15 @@ def cross_validation_linear():
     ax_r2.legend()
     st.pyplot(fig_r2)
 
-def regression2_page():
+def regression_page():
     """Main page layout"""
     st.header("Bienvenue")
     st.caption("Bienvenue dans le Playground de Régression")
 
-    if st.button("Afficher les informations sur le DataFrame", use_container_width=True):
+    if st.sidebar.button("Afficher les informations sur le DataFrame", use_container_width=True):
         display_dataframe_info()
 
-    options = st.selectbox(
+    options = st.sidebar.selectbox(
         "Veuillez choisir un modèle",
         ["", "Régression Linéaire", "Arbre de Décision", "Lasso","Interaction features", "Ridge", "Cross Validation" ],
         format_func=lambda x: "Sélectionnez un modèle" if x == "" else x
@@ -407,5 +405,3 @@ def regression2_page():
     elif options == "Cross Validation":
         st.header("Cross Validation")
         cross_validation_linear()
-
-    
