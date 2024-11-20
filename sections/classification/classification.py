@@ -5,7 +5,7 @@ import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, auc, classification_report, confusion_matrix
 
 
@@ -147,6 +147,50 @@ def random_forest_model():
         ax.set_title("Précision par Classe")
         st.pyplot(fig)
 
+def cross_validation_random_forest():
+    """Validation croisée pour une Forêt Aléatoire"""
+    st.header("Validation Croisée : Forêt Aléatoire")
+    data = load_data()
+    if data is not None:
+        if "target" not in data.columns:
+            st.error("La colonne 'target' est manquante dans le fichier.")
+            return
+
+        # Split the data into features (X) and target (y)
+        X = data.drop(columns=['target'])
+        y = data['target']
+
+        # Model RandomForestClassifier
+        model = RandomForestClassifier(random_state=42)
+
+        # Applicate  5-fold cross-validation
+        scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')
+
+        # Display results
+        results_df = pd.DataFrame({
+            "Fold": [f"Fold {i+1}" for i in range(len(scores))],
+            "Accuracy": scores
+        })
+        average_accuracy = scores.mean()
+        std_dev_accuracy = scores.std()
+        st.dataframe(results_df)
+        st.write(f"**Average Accuracy:** {average_accuracy:.2%}")
+        st.write(f"**Std Accurancy:** {std_dev_accuracy:.2%}")
+        
+         # Plot of the scores
+        st.write("### Cross-Validation Accuracy Plot")
+        fold_labels = [f"Fold {i+1}" for i in range(len(scores))]  
+        plot_data = pd.DataFrame({"Fold": fold_labels, "Accuracy": scores})  
+        
+        fig, ax = plt.subplots(figsize=(8, 5))
+        sns.barplot(data=plot_data, x="Fold", y="Accuracy", palette="Blues_d", ax=ax)  
+        ax.axhline(y=scores.mean(), color="red", linestyle="--", label="Mean Accuracy")  
+        ax.set_title("Cross-Validation Accuracy for Each Fold", fontsize=14)
+        ax.set_ylabel("Accuracy", fontsize=12)
+        ax.set_xlabel("Fold", fontsize=12)
+        ax.legend()
+        st.pyplot(fig)
+        
 #Classification page in streamlit   
 def classification_page():
     st.header("Bienvenue")
@@ -157,7 +201,7 @@ def classification_page():
 
     options = st.sidebar.selectbox(
         "Choisissez un modèle",
-        ["Régression Logistique","Forêt Aléatoire", "Arbre de Décision", "Réseau de Neurones"], 
+        ["Régression Logistique","Forêt Aléatoire","Validation Croisée_Forêt Aléatoire" ,"Arbre de Décision", "Réseau de Neurones"], 
         format_func=lambda x: "Sélectionnez un modèle" if x == "" else x,
     )
 
@@ -165,5 +209,7 @@ def classification_page():
         logistic_regression_model()
     elif  options == "Forêt Aléatoire":
         random_forest_model()
+    elif options == "Validation Croisée_Forêt Aléatoire":
+        cross_validation_random_forest()
     
     
