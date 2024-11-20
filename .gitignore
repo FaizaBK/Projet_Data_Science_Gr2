@@ -1,8 +1,13 @@
 .venv
+
 .env
 env
 venv
 
+*.pyc
+
+.idea
 __pycache__
 
-*.pyc
+mon_env
+
