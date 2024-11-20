@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from PIL import Image, ImageDraw
+from PIL import Image, ImageFont, ImageDraw
 import streamlit as st
 from tempfile import NamedTemporaryFile
 
@@ -11,7 +11,7 @@ load_dotenv()
 
 # initialize the client
 CLIENT = InferenceHTTPClient(
-    api_url="https://detect.roboflow.com",
+    api_url=os.getenv("ROBOFLOW_API_URL"),
     api_key=os.getenv("ROBOFLOW_API_KEY")
 )
 
@@ -36,7 +36,7 @@ def annotate_image(image, predictions, MinConfidence):
 
             # Dessiner le rectangle et ajouter le label
             draw.rectangle([x_min, y_min, x_max, y_max], outline="red", width=3)
-            draw.text((x_min, y_min - 10), f"{label} ({confidence:.2f})", fill="red")
+            draw.text((x_max, y_min), f"{label}\n({confidence:.2f})", fill="red", font=ImageFont.truetype("arial.ttf", height/2))
 
     return image
 
