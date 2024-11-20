@@ -1,16 +1,14 @@
-
 import streamlit as st
-from sections.classification.classification import classification_page
 from sections.nailsdetection.nails import nail_page
 from sections.regression.regression import regression_page
+from sections.classification.classification import classification_page
 
 st.set_page_config(
-    page_title="Playground ML",
-    page_icon="🧊",
+    page_title="ProjectDataScience",
+    page_icon=":shark:",
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
 type_data = st.sidebar.radio(
     "Choisissez votre type de playground",
     ["Regression", "Classification", "NailsDetection"]
