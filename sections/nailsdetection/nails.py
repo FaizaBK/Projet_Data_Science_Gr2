@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+import math
 import os
 from PIL import Image, ImageFont, ImageDraw
 import streamlit as st
@@ -21,12 +22,16 @@ def annotate_image(image, predictions, MinConfidence):
     """
     draw = ImageDraw.Draw(image)
 
+    colors = ["blue","green","yellow","orange","red","purple"]
+    i = (1 - MinConfidence)/5
+
     for prediction in predictions:
         if prediction["confidence"] >= MinConfidence:
             # Récupérer les coordonnées et la classe
             x, y, width, height = prediction["x"], prediction["y"], prediction["width"], prediction["height"]
             label = prediction["class"]
             confidence = prediction["confidence"]
+            color = colors[math.trunc((confidence - MinConfidence)/i)]
 
             # Calculer les coins du rectangle
             x_min = x - width / 2
@@ -35,8 +40,8 @@ def annotate_image(image, predictions, MinConfidence):
             y_max = y + height / 2
 
             # Dessiner le rectangle et ajouter le label
-            draw.rectangle([x_min, y_min, x_max, y_max], outline="red", width=3)
-            draw.text((x_max, y_min), f"{label}\n({confidence:.2f})", fill="red", font=ImageFont.truetype("arial.ttf", height/2))
+            draw.rectangle([x_min, y_min, x_max, y_max], outline=color, width=3)
+            draw.text((x_max, y_min), f"{label}\n({confidence:.2f})", fill=color, font=ImageFont.truetype("arial.ttf", height/2))
 
     return image
 
