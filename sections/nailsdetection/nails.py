@@ -44,7 +44,7 @@ def nail_page():
     st.header("Bienvenue")
     st.caption("Bienvenue dans la détection d'ongle")
 
-with st.form("image_form"):
+    with st.form("image_form"):
 
         user_image = st.file_uploader(label='importer une image', type=['png', 'jpg'])
         
