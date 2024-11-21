@@ -408,7 +408,7 @@ def regression_page():
 
     options = st.sidebar.selectbox(
         "Veuillez choisir un modèle",
-        ["", "Régression Linéaire", "Arbre de Décision", "Lasso","Interactions des features", "Ridge", "Cross Validation" ],
+        ["", "Régression Linéaire", "Arbre de Décision", "Lasso", "Ridge", "Cross Validation" ],
         format_func=lambda x: "Sélectionnez un modèle" if x == "" else x
     )
 
@@ -421,9 +421,6 @@ def regression_page():
     elif options == "Lasso":
         st.header("Lasso")
         lasso_dataframe()
-    elif options == "Interactions des feature":
-        st.header("Interaction des features")
-        interactions_features()
     elif options == "Ridge":
         st.header("Ridge")
         ridge_model()
