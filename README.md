@@ -77,6 +77,10 @@ Projet_Data_Science_Gr2/
 │
 ├── .venv/                  # Environnement virtuel
 │
+├── .env                    # Variables d'environnement
+│   ├── ROBOFLOW_API_URL="https://detect.roboflow.com"
+│   ├── ROBOFLOW_API_KEY="votre_clés_api"
+│
 ├── data/                   # Données en csv
 │   ├── diabete.csv         # Fichier initial
 │   ├── vin.csv             # Fichier initial
