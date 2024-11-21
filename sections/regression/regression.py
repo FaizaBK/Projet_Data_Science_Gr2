@@ -431,16 +431,4 @@ def regression_page():
         st.header("Validation Croisée")
         cross_validation_linear()
         
-    #Creation of formulair
-    with st.form("Formulaire"):
-        st.write("Remplir le formulaire")
-        user_age = st.number_input(label='Âge', min_value=0, max_value=120)
-        user_sex = st.selectbox('Sexe', ['M','F'])
-        user_bmi = st.number_input('BMI')
-        
-        st.form_submit_button('Submit my picks')
-
-    # This is outside the form
-    st.write(user_age)
-    st.write(user_sex)
-    st.write(user_bmi)
+    
