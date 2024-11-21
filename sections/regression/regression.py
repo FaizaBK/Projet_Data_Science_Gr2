@@ -421,7 +421,7 @@ def regression_page():
     elif options == "Lasso":
         st.header("Lasso")
         lasso_dataframe()
-    elif options == "Interaction features":
+    elif options == "Interactions des feature":
         st.header("Interaction des features")
         interactions_features()
     elif options == "Ridge":
