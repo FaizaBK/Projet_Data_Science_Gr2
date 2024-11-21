@@ -82,7 +82,6 @@ def logistic_regression_model():
         ax.set_title("Matrice de confusion", fontsize=14)
         st.pyplot(fig)
 
-        
 # Train random forest model
 def random_forest_model():
     """Train and evaluate a Random Forest model"""
@@ -161,7 +160,7 @@ def cross_validation_random_forest():
         y = data['target']
 
         # Model RandomForestClassifier
-        model = RandomForestClassifier(random_state=42)
+        model = RandomForestClassifier(n_estimators=100, random_state=42)
 
         # Applicate  5-fold cross-validation
         scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')
@@ -178,16 +177,12 @@ def cross_validation_random_forest():
         st.write(f"**Std Accurancy:** {std_dev_accuracy:.2%}")
         
          # Plot of the scores
-        st.write("### Cross-Validation Accuracy Plot")
-        fold_labels = [f"Fold {i+1}" for i in range(len(scores))]  
-        plot_data = pd.DataFrame({"Fold": fold_labels, "Accuracy": scores})  
-        
-        fig, ax = plt.subplots(figsize=(8, 5))
-        sns.barplot(data=plot_data, x="Fold", y="Accuracy", palette="Blues_d", ax=ax)  
-        ax.axhline(y=scores.mean(), color="red", linestyle="--", label="Mean Accuracy")  
-        ax.set_title("Cross-Validation Accuracy for Each Fold", fontsize=14)
-        ax.set_ylabel("Accuracy", fontsize=12)
-        ax.set_xlabel("Fold", fontsize=12)
+        st.write("### Accuracy per Fold")
+        fig, ax = plt.subplots()
+        sns.barplot(x=results_df["Fold"], y=results_df["Accuracy"], palette="viridis", ax=ax)
+        ax.axhline(y=average_accuracy, color="red", linestyle="--", label="Mean Accuracy")
+        ax.set_title("Cross-Validation Accuracy")
+        ax.set_ylabel("Accuracy")
         ax.legend()
         st.pyplot(fig)
         

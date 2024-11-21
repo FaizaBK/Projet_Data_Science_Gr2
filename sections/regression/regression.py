@@ -59,12 +59,13 @@ def analyse_dataframe():
         target_corr = correlation_matrix["target"].sort_values(ascending=False)
         st.write("Corrélation avec la cible (target):")
         st.write(target_corr)
-        threshold = st.slider(
+        threshold = st.sidebar.slider(
             "Veuillez entrer un seuil de corrélation pour sélectionner les features", 
             min_value=-0.6, max_value=1.0, value=0.0, step=0.01)
 
         selected_features = target_corr[target_corr >= threshold].index.tolist()
-        selected_features.remove('target')
+        if 'target' in selected_features:
+            selected_features.remove('target')
         st.write(f"Features sélectionnées avec une corrélation >= {threshold} avec la cible :")
         st.write(selected_features)
         
@@ -208,7 +209,7 @@ def lasso_dataframe():
     analyse_dataframe()
     # Controle la force de la régularisation
     #  Previent du surapprentissage (overfit)
-    alpha = st.slider("Sélectionnez le paramètre alpha pour le modèle Lasso", min_value=0.01, max_value=1.0, value=0.1, step=0.01)
+    alpha = st.sidebar.slider("Sélectionnez le paramètre alpha pour le modèle Lasso", min_value=0.01, max_value=1.0, value=0.1, step=0.01)
     model = Lasso(alpha=alpha, random_state=42)
     train_model(model, "Lasso")
     
@@ -292,7 +293,7 @@ def ridge_model():
     analyse_dataframe()
     # Controle la force de la régularisation
     #  Previent du surapprentissage (overfit)
-    alpha = st.slider("Sélectionnez le paramètre alpha pour le modèle Lasso", min_value=0.01, max_value=1.0, value=0.1, step=0.01)
+    alpha = st.sidebar.slider("Sélectionnez le paramètre alpha pour le modèle Ridge", min_value=0.01, max_value=1.0, value=0.1, step=0.01)
     model = Ridge(alpha=alpha, random_state=42)
     train_model(model, "Ridge")
     
