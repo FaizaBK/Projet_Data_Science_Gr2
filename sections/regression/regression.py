@@ -408,7 +408,7 @@ def regression_page():
 
     options = st.sidebar.selectbox(
         "Veuillez choisir un modèle",
-        ["", "Régression Linéaire", "Arbre de Décision", "Lasso","Interactions des features", "Ridge", "Validation Croisée" ],
+        ["", "Régression Linéaire", "Arbre de Décision", "Lasso","Interactions des features", "Ridge", "Cross Validation" ],
         format_func=lambda x: "Sélectionnez un modèle" if x == "" else x
     )
 
@@ -428,7 +428,7 @@ def regression_page():
         st.header("Ridge")
         ridge_model()
     elif options == "Cross Validation":
-        st.header("Validation Croisée")
+        st.header("Cross Validation")
         cross_validation_linear()
         
     
