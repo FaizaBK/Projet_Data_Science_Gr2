@@ -5,12 +5,12 @@ import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, auc, classification_report, confusion_matrix, precision_recall_curve, roc_curve
-from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, auc, classification_report, confusion_matrix
 
 
-# Charger les données
+
+# Load the data
 def load_data(data_path="data/cleanVinData.csv"):
     """Load data and delete unnecessary columns"""
     if os.path.exists(data_path):
@@ -23,7 +23,7 @@ def load_data(data_path="data/cleanVinData.csv"):
         st.error("Le fichier est introuvable.")
         return None
 
-# Afficher les informations du DataFrame
+# Display DataFrame information
 def display_dataframe_info():
     """Display basic information about the DataFrame"""
     st.header("Page Info DataFrame")
@@ -41,8 +41,8 @@ def display_dataframe_info():
         st.session_state.data = data
     else:
         st.error("Le fichier est introuvable.")
-
-# Entraîner modèle de régression logistique
+        
+# Train logistic regression model
 def logistic_regression_model():
     """Train and evaluate a Logistic Regression model"""
     st.header("Régression Logistique")
@@ -52,34 +52,37 @@ def logistic_regression_model():
             st.error("La colonne 'target' est manquante dans le fichier.")
             return
         
-        # Séparation des données
+        # Split the data
         X = data.drop(columns=['target'])
         y = data['target']
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
 
-        # Entraînement du modèle
-        st.write("Entraînement du modèle...")
+       # Train the model
         model = LogisticRegression(solver='lbfgs')
         model.fit(X_train, y_train)
 
-        # Prédictions
+        # Predictions
         y_pred = model.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
 
-        # Afficher les résultats
-        st.write(f"**Accuracy :** {accuracy:.2f}")
-        st.write("**Rapport de classification :**")
-        st.text(classification_report(y_test, y_pred))
+        # Display the results
+        st.metric(label="**Précision (Accuracy)**", value=f"{accuracy:.2%}")
+        st.write("### Rapport de classification")
+        report = classification_report(y_test, y_pred, output_dict=True)
+        df_report = pd.DataFrame(report).transpose()
+        st.dataframe(df_report.style.format({"precision": "{:.2f}", "recall": "{:.2f}", "f1-score": "{:.2f}"}))
 
         # Matrice de confusion
-        st.write("**Matrice de confusion :**")
-        fig, ax = plt.subplots()
-        sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt='d', cmap="Blues", ax=ax)
-        ax.set_xlabel("Prédictions")
-        ax.set_ylabel("Réelles")
+        st.write("### Matrice de confusion")
+        conf_matrix = confusion_matrix(y_test, y_pred)
+        fig, ax = plt.subplots(figsize=(5, 5))
+        sns.heatmap(conf_matrix, annot=True, fmt='d', cmap="Blues", cbar=False, ax=ax)
+        ax.set_xlabel("Prédictions", fontsize=12)
+        ax.set_ylabel("Valeurs réelles", fontsize=12)
+        ax.set_title("Matrice de confusion", fontsize=14)
         st.pyplot(fig)
-        
-# Entraîner modèle de forêt aléatoire
+
+# Train random forest model
 def random_forest_model():
     """Train and evaluate a Random Forest model"""
     st.header("Forêt Aléatoire")
@@ -89,34 +92,35 @@ def random_forest_model():
             st.error("La colonne 'target' est manquante dans le fichier.")
             return
         
-        # Séparation des données
+        # Split the datas
         X = data.drop(columns=['target'])
         y = data['target']
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
 
-        # Entraînement du modèle
-        st.write("Entraînement du modèle...")
+        # Train the model
         model = RandomForestClassifier(n_estimators=100, random_state=42)
         model.fit(X_train, y_train)
 
-        # Prédictions
+        # Predictions
         y_pred = model.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
 
-        # Afficher les résultats
-        st.write(f"**Accuracy :** {accuracy:.2f}")
-        st.write("**Rapport de classification :**")
-        st.text(classification_report(y_test, y_pred))
+        # Display the results
+        st.metric(label="**Précision (Accuracy)**", value=f"{accuracy:.2%}")
+
+        # Rapport de classification
+        st.write("### Rapport de classification")
+        report = classification_report(y_test, y_pred, output_dict=True)
+        df_report = pd.DataFrame(report).transpose()
+        st.dataframe(df_report.style.format({"precision": "{:.2f}", "recall": "{:.2f}", "f1-score": "{:.2f}"}))
 
         # Matrice de confusion
-        st.write("**Matrice de confusion :**")
-        fig, ax = plt.subplots(figsize=(7, 5))
-        sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt='d', cmap="Blues", ax=ax)
-        ax.set_xlabel("Prédictions")
-        ax.set_ylabel("Réelles")
+        st.write("### Matrice de confusion")
+        fig, ax = plt.subplots(figsize=(5, 5))
+        ConfusionMatrixDisplay.from_estimator(model, X_test, y_test, ax=ax, cmap="Blues")
         st.pyplot(fig)
 
-        # Graphique des importances des caractéristiques
+        # Feature importance charcterstics
         st.write("**Importance des caractéristiques :**")
         feature_importances = model.feature_importances_
         features = X.columns
@@ -129,7 +133,7 @@ def random_forest_model():
         st.pyplot(fig)
 
 
-        # Précision par classe
+        # Precision by class
         st.write("**Précision par classe :**")
         class_report = classification_report(y_test, y_pred, output_dict=True)
         precision = [class_report[str(i)]['precision'] for i in range(len(class_report) - 3)]  # exclude the accuracy, macro avg, and weighted avg
@@ -142,7 +146,47 @@ def random_forest_model():
         ax.set_title("Précision par Classe")
         st.pyplot(fig)
 
-      
+def cross_validation_random_forest():
+    """Validation croisée pour une Forêt Aléatoire"""
+    st.header("Validation Croisée : Forêt Aléatoire")
+    data = load_data()
+    if data is not None:
+        if "target" not in data.columns:
+            st.error("La colonne 'target' est manquante dans le fichier.")
+            return
+
+        # Split the data into features (X) and target (y)
+        X = data.drop(columns=['target'])
+        y = data['target']
+
+        # Model RandomForestClassifier
+        model = RandomForestClassifier(n_estimators=100, random_state=42)
+
+        # Applicate  5-fold cross-validation
+        scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')
+
+        # Display results
+        results_df = pd.DataFrame({
+            "Fold": [f"Fold {i+1}" for i in range(len(scores))],
+            "Accuracy": scores
+        })
+        average_accuracy = scores.mean()
+        std_dev_accuracy = scores.std()
+        st.dataframe(results_df)
+        st.write(f"**Average Accuracy:** {average_accuracy:.2%}")
+        st.write(f"**Std Accurancy:** {std_dev_accuracy:.2%}")
+        
+         # Plot of the scores
+        st.write("### Accuracy per Fold")
+        fig, ax = plt.subplots()
+        sns.barplot(x=results_df["Fold"], y=results_df["Accuracy"], palette="viridis", ax=ax)
+        ax.axhline(y=average_accuracy, color="red", linestyle="--", label="Mean Accuracy")
+        ax.set_title("Cross-Validation Accuracy")
+        ax.set_ylabel("Accuracy")
+        ax.legend()
+        st.pyplot(fig)
+        
+#Classification page in streamlit   
 def classification_page():
     st.header("Bienvenue")
     st.caption("Playground pour les modèles de classification")
@@ -152,7 +196,7 @@ def classification_page():
 
     options = st.sidebar.selectbox(
         "Choisissez un modèle",
-        ["Régression Logistique","Forêt Aléatoire", ], 
+        ["","Régression Logistique","Forêt Aléatoire","Validation Croisée_Forêt Aléatoire" ,"Arbre de Décision", "Réseau de Neurones"], 
         format_func=lambda x: "Sélectionnez un modèle" if x == "" else x,
     )
 
@@ -160,4 +204,7 @@ def classification_page():
         logistic_regression_model()
     elif  options == "Forêt Aléatoire":
         random_forest_model()
+    elif options == "Validation Croisée_Forêt Aléatoire":
+        cross_validation_random_forest()
+    
     

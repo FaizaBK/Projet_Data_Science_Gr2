@@ -1,7 +1,9 @@
 import streamlit as st
 from sections.nailsdetection.nails import nail_page
-from sections.regression.regression import regression_page
 from sections.classification.classification import classification_page
+from sections.regression.regression import regression_page
+
+
 
 st.set_page_config(
     page_title="ProjectDataScience",
