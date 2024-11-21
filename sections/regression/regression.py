@@ -376,8 +376,7 @@ def cross_validation_linear():
 
 def regression_page():
     """Main page layout"""
-    st.header("Bienvenue")
-    st.caption("Bienvenue dans le Playground de Régression")
+    st.header("Régression")
 
     if st.sidebar.button("Afficher les informations sur le DataFrame", use_container_width=True):
         display_dataframe_info()
