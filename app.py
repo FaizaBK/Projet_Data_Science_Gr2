@@ -27,6 +27,6 @@ elif type_data == "Classification":
 elif type_data == "NailsDetection":
     nail_page()
 else:
-    st.write("Choisissez une option")
+    st.write("Choisissez une option dans la sidebard")
     
     
