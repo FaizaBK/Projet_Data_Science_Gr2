@@ -50,7 +50,7 @@ def nail_page():
 
     with st.form("image_form"):
 
-        user_image = st.file_uploader(label='importer une image', type=['png', 'jpg'])
+        user_image = st.file_uploader(label='Importer une image', type=['png', 'jpg'])
         st.form_submit_button("Importer l'image")
 
     # This is outside the form
@@ -61,7 +61,7 @@ def nail_page():
         result = CLIENT.infer("/tmp/"+user_image.name, model_id="nailsdiginamic/2")
 
         with st.form("confidence_form"):
-            confidence = st.slider(label='confidence', min_value=0.0, max_value=1.0, value=0.6)
+            confidence = st.slider(label='Confidence', min_value=0.0, max_value=1.0, value=0.6)
         
             st.form_submit_button("Afficher la détection")
         

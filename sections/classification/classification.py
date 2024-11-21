@@ -227,17 +227,20 @@ def decision_tree_model():
         df_report = pd.DataFrame(report).transpose()
         st.dataframe(df_report.style.format({"precision": "{:.2f}", "recall": "{:.2f}", "f1-score": "{:.2f}"}))
 
-        # Matrice de confusion
-        st.write("### Matrice de confusion")
-        fig, ax = plt.subplots(figsize=(5, 5))
-        ConfusionMatrixDisplay.from_estimator(model, X_test, y_test, ax=ax, cmap="Blues")
-        st.pyplot(fig)
-
-        # Visualisation de l'arbre
-        st.write("### Visualisation de l'Arbre de Décision")
-        fig, ax = plt.subplots(figsize=(10, 6))
-        plot_tree(model, feature_names=X.columns, class_names=model.classes_.astype(str), filled=True, ax=ax)
-        st.pyplot(fig)   
+        row1col1, row1col2 = st.columns(2)
+        
+        with row1col1:
+            # Matrice de confusion
+            st.write("### Matrice de confusion")
+            fig, ax = plt.subplots(figsize=(5, 5))
+            ConfusionMatrixDisplay.from_estimator(model, X_test, y_test, ax=ax, cmap="Blues")
+            st.pyplot(fig)
+        with row1col2:
+            # Visualisation de l'arbre
+            st.write("### Visualisation de l'Arbre de Décision")
+            fig, ax = plt.subplots(figsize=(10, 6))
+            plot_tree(model, feature_names=X.columns, class_names=model.classes_.astype(str), filled=True, ax=ax)
+            st.pyplot(fig)   
             
 #Classification page in streamlit   
 def classification_page():
