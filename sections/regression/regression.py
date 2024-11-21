@@ -217,10 +217,6 @@ def interactions_features():
     data = load_data()
     st.write("Analyse des corrélations")
     correlation_matrix = data.corr()
-    fig, ax = plt.subplots(figsize=(10, 8))
-    ax.set_title("Matrice de corrélations")
-    sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f", ax=ax)
-    st.pyplot(fig)
     
     # Interaction features
     data['age_bmi_interaction'] = data['age'] * data['bmi']
@@ -234,11 +230,19 @@ def interactions_features():
 
     #Divisin and entrain model :
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    
+    row1col1, row1col2 = st.columns(2)
+    with row1col1:
+        fig, ax = plt.subplots(figsize=(10, 8))
+        ax.set_title("Matrice de corrélations")
+        sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f", ax=ax)
+        st.pyplot(fig)
 
-    st.write(f"Training data shape: {X_train.shape}")
-    st.write(f"Test data shape: {X_test.shape}")
-    st.write(f"Training labels shape: {y_train.shape}")
-    st.write(f"Test labels shape: {y_test.shape}")
+    with row1col2:
+        st.write(f"Training data shape: {X_train.shape}")
+        st.write(f"Test data shape: {X_test.shape}")
+        st.write(f"Training labels shape: {y_train.shape}")
+        st.write(f"Test labels shape: {y_test.shape}")
 
     # Train model
     model = LinearRegression()
@@ -259,35 +263,45 @@ def interactions_features():
     test_r2 = r2_score(y_test, y_test_pred)
 
     #Show Metrics
-    st.write(f"Training Mean Squared Error (MSE): {train_mse}")
-    st.write(f"Training Coefficient of Determination (R²): {train_r2}")
-    st.write(f"Test Mean Squared Error (MSE): {test_mse}")
-    st.write(f"Test Coefficient of Determination (R²): {test_r2}")
+    col_test, col_train = st.columns(2)
+    with col_test:
+        st.write(f"Training Mean Squared Error (MSE): {train_mse}")
+        st.write(f"Training Coefficient of Determination (R²): {train_r2}")
+        
+    with col_train: 
+        st.write(f"Test Mean Squared Error (MSE): {test_mse}")
+        st.write(f"Test Coefficient of Determination (R²): {test_r2}")
+
 
     #comparaison real and test
     comparison_data = pd.DataFrame({'Actual': y_test, 'Predicted': y_test_pred})
     st.write("Comparing Predicted vs Actual values (Test Set)")
     st.write(comparison_data)
 
-    # Plotting  Predictions vs test
-    fig_test, ax_test = plt.subplots()
-    ax_test.scatter(y_test, y_test_pred, color='blue', label="Test Predictions")
-    ax_test.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], color='red', linewidth=2, label="Perfect Prediction")
-    ax_test.set_xlabel('True Values')
-    ax_test.set_ylabel('Predictions')
-    ax_test.set_title('True Values vs Predictions (Test Set)')
-    ax_test.legend()
-    st.pyplot(fig_test)
+    row2col1, row2col2 = st.columns(2)
+    with row2col1:
+        # Plotting  Predictions vs test
+        fig_test, ax_test = plt.subplots()
+        ax_test.scatter(y_test, y_test_pred, color='blue', label="Test Predictions")
+        ax_test.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], color='red', linewidth=2, label="Perfect Prediction")
+        ax_test.set_xlabel('True Values')
+        ax_test.set_ylabel('Predictions')
+        ax_test.set_title('True Values vs Predictions (Test Set)')
+        ax_test.legend()
+        st.pyplot(fig_test)
 
-    # Plotting predictions vs train 
-    fig_train, ax_train = plt.subplots()
-    ax_train.scatter(y_train, y_train_pred, color='green', label="Train Predictions")
-    ax_train.plot([min(y_train), max(y_train)], [min(y_train), max(y_train)], color='red', linewidth=2, label="Perfect Prediction")
-    ax_train.set_xlabel('True Values')
-    ax_train.set_ylabel('Predictions')
-    ax_train.set_title('True Values vs Predictions (Train Set)')
-    ax_train.legend()
-    st.pyplot(fig_train)
+    with row2col2:
+        # Plotting predictions vs train 
+        fig_train, ax_train = plt.subplots()
+        ax_train.scatter(y_train, y_train_pred, color='green', label="Train Predictions")
+        ax_train.plot([min(y_train), max(y_train)], [min(y_train), max(y_train)], color='red', linewidth=2, label="Perfect Prediction")
+        ax_train.set_xlabel('True Values')
+        ax_train.set_ylabel('Predictions')
+        ax_train.set_title('True Values vs Predictions (Train Set)')
+        ax_train.legend()
+        st.pyplot(fig_train)
+
+    
 
 def ridge_model():
     analyse_dataframe()
@@ -339,40 +353,50 @@ def cross_validation_linear():
     st.write("Cross-Validation Std of MSE:", std_mse)
     st.write("Cross-Validation R² across 5 folds:", mean_r2)
     st.write("Cross-Validation Std of R²:", std_r2)
-    st.write(f"Training Mean Squared Error (MSE): {train_mse:.2f}")
-    st.write(f"Training R²: {train_r2:.2f}")
-    st.write(f"Test Mean Squared Error (MSE): {test_mse:.2f}")
-    st.write(f"Test R²: {test_r2:.2f}")
+    
+    col_test, col_train = st.columns(2)
+    with col_test:
+        st.write(f"Training Mean Squared Error (MSE): {train_mse:.2f}")
+        st.write(f"Training R²: {train_r2:.2f}")
+        
+    with col_train: 
+        st.write(f"Test Mean Squared Error (MSE): {test_mse:.2f}")
+        st.write(f"Test R²: {test_r2:.2f}")
 
-    # Plotting MSE: Cross-Validation vs Test ans train results
-    fig_mse, ax_mse = plt.subplots(figsize=(10, 6))
-    ax_mse.bar(range(1, 6), cv_mse, color='blue', label='CV MSE')
-    ax_mse.axhline(mean_mse, color='red', linestyle='--', label=f'Mean CV MSE = {mean_mse:.2f}')
-    ax_mse.bar(6, test_mse, color='yellow', label=f'Test Set MSE = {test_mse:.2f}')
-    ax_mse.bar(7, train_mse, color='green', label=f'Train Set MSE = {train_mse:.2f}')
 
-    ax_mse.set_xticks(range(1, 8))
-    ax_mse.set_xticklabels([f'Fold {i}' for i in range(1, 6)] + ['Test', 'Train'])
-    ax_mse.set_xlabel('Fold')
-    ax_mse.set_ylabel('Mean Squared Error')
-    ax_mse.set_title('Comparison of MSE Scores: Cross-Validation, Test, and Train Sets')
-    ax_mse.legend()
-    st.pyplot(fig_mse)
+    row1Col1,row1Col2 = st.columns(2)
+    with row1Col1:
+        # Plotting MSE: Cross-Validation vs Test ans train results
+        fig_mse, ax_mse = plt.subplots(figsize=(10, 6))
+        ax_mse.bar(range(1, 6), cv_mse, color='blue', label='CV MSE')
+        ax_mse.axhline(mean_mse, color='red', linestyle='--', label=f'Mean CV MSE = {mean_mse:.2f}')
+        ax_mse.bar(6, test_mse, color='yellow', label=f'Test Set MSE = {test_mse:.2f}')
+        ax_mse.bar(7, train_mse, color='green', label=f'Train Set MSE = {train_mse:.2f}')
 
-    # Plotting R² : Cross-Validation vs Test and train results
-    fig_r2, ax_r2 = plt.subplots(figsize=(10, 6))
-    ax_r2.bar(range(1, 6), cv_r2_scores, color='purple', label='CV R² ')
-    ax_r2.axhline(mean_r2, color='red', linestyle='--', label=f'Mean CV R² = {mean_r2:.2f}')
-    ax_r2.bar(6, test_r2, color='yellow', label=f'Test Set R² = {test_r2:.2f}')
-    ax_r2.bar(7, train_r2, color='green', label=f'Train Set R² = {train_r2:.2f}')
+        ax_mse.set_xticks(range(1, 8))
+        ax_mse.set_xticklabels([f'Fold {i}' for i in range(1, 6)] + ['Test', 'Train'])
+        ax_mse.set_xlabel('Fold')
+        ax_mse.set_ylabel('Mean Squared Error')
+        ax_mse.set_title('Comparison of MSE Scores: Cross-Validation, Test, and Train Sets')
+        ax_mse.legend()
+        st.pyplot(fig_mse)
+        
+    with row1Col2:
+        # Plotting R² : Cross-Validation vs Test and train results
+        fig_r2, ax_r2 = plt.subplots(figsize=(10, 6))
+        ax_r2.bar(range(1, 6), cv_r2_scores, color='purple', label='CV R² ')
+        ax_r2.axhline(mean_r2, color='red', linestyle='--', label=f'Mean CV R² = {mean_r2:.2f}')
+        ax_r2.bar(6, test_r2, color='yellow', label=f'Test Set R² = {test_r2:.2f}')
+        ax_r2.bar(7, train_r2, color='green', label=f'Train Set R² = {train_r2:.2f}')
 
-    ax_r2.set_xticks(range(1, 8))
-    ax_r2.set_xticklabels([f'Fold {i}' for i in range(1, 6)] + ['Test', 'Train'])
-    ax_r2.set_xlabel('Fold')
-    ax_r2.set_ylabel('R²')
-    ax_r2.set_title('Comparison of R² Scores: Cross-Validation, Test, and Train Sets')
-    ax_r2.legend()
-    st.pyplot(fig_r2)
+        ax_r2.set_xticks(range(1, 8))
+        ax_r2.set_xticklabels([f'Fold {i}' for i in range(1, 6)] + ['Test', 'Train'])
+        ax_r2.set_xlabel('Fold')
+        ax_r2.set_ylabel('R²')
+        ax_r2.set_title('Comparison of R² Scores: Cross-Validation, Test, and Train Sets')
+        ax_r2.legend()
+        st.pyplot(fig_r2)
+
 
 def regression_page():
     """Main page layout"""
