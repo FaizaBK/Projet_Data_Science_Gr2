@@ -46,14 +46,12 @@ def annotate_image(image, predictions, MinConfidence):
     return image
 
 def nail_page():
-    st.header("Bienvenue")
-    st.caption("Bienvenue dans la détection d'ongle")
+    st.header("Détection d'ongle")
 
     with st.form("image_form"):
 
         user_image = st.file_uploader(label='importer une image', type=['png', 'jpg'])
-        
-        st.form_submit_button("importer l'image")
+        st.form_submit_button("Importer l'image")
 
     # This is outside the form
     if user_image != None:
@@ -65,6 +63,6 @@ def nail_page():
         with st.form("confidence_form"):
             confidence = st.slider(label='confidence', min_value=0.0, max_value=1.0, value=0.6)
         
-            st.form_submit_button("afficher la détection")
+            st.form_submit_button("Afficher la détection")
         
         st.image(annotate_image(Image.open(user_image), result["predictions"], confidence))

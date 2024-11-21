@@ -11,9 +11,13 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+st.header("Bienvenue sur notre projet de Data Science")
+st.sidebar.link_button("Got to repo", "https://github.com/FaizaBK/Projet_Data_Science_Gr2")
+
 type_data = st.sidebar.radio(
     "Choisissez votre type de playground",
-    ["Regression", "Classification", "NailsDetection"]
+    ["Regression", "Classification", "NailsDetection"],
+    index=None,
 )
 
 if type_data == "Regression":
@@ -24,3 +28,5 @@ elif type_data == "NailsDetection":
     nail_page()
 else:
     st.write("Choisissez une option")
+    
+    

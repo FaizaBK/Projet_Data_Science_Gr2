@@ -188,8 +188,7 @@ def cross_validation_random_forest():
         
 #Classification page in streamlit   
 def classification_page():
-    st.header("Bienvenue")
-    st.caption("Playground pour les modèles de classification")
+    st.header("Classification")
     
     if st.sidebar.button("Afficher les informations sur le DataFrame"):
         display_dataframe_info()
