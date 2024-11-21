@@ -1,3 +1,4 @@
+import random
 import pandas as pd
 import streamlit as st
 import os
@@ -407,7 +408,7 @@ def regression_page():
 
     options = st.sidebar.selectbox(
         "Veuillez choisir un modèle",
-        ["", "Régression Linéaire", "Arbre de Décision", "Lasso","Interaction features", "Ridge", "Cross Validation" ],
+        ["", "Régression Linéaire", "Arbre de Décision", "Lasso","Interactions des features", "Ridge", "Validation Croisée" ],
         format_func=lambda x: "Sélectionnez un modèle" if x == "" else x
     )
 
@@ -427,5 +428,19 @@ def regression_page():
         st.header("Ridge")
         ridge_model()
     elif options == "Cross Validation":
-        st.header("Cross Validation")
+        st.header("Validation Croisée")
         cross_validation_linear()
+        
+    #Creation of formulair
+    with st.form("Formulaire"):
+        st.write("Remplir le formulaire")
+        user_age = st.number_input(label='Âge', min_value=0, max_value=120)
+        user_sex = st.selectbox('Sexe', ['M','F'])
+        user_bmi = st.number_input('BMI')
+        
+        st.form_submit_button('Submit my picks')
+
+    # This is outside the form
+    st.write(user_age)
+    st.write(user_sex)
+    st.write(user_bmi)

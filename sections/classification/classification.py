@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier, plot_tree
 import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -194,7 +195,50 @@ def cross_validation_random_forest():
         ax.set_ylabel("Accuracy")
         ax.legend()
         st.pyplot(fig)
-        
+ 
+def decision_tree_model():
+    """Train and visualize a Decision Tree model"""
+    st.header("Arbre de Décision")
+    data = load_data()
+    if data is not None:
+        if "target" not in data.columns:
+            st.error("La colonne 'target' est manquante dans le fichier.")
+            return
+
+        # Split the data
+        X = data.drop(columns=['target'])
+        y = data['target']
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+        # Train the Decision Tree
+        model = DecisionTreeClassifier(max_depth=4, random_state=42)
+        model.fit(X_train, y_train)
+
+        # Predict and evaluate
+        y_pred = model.predict(X_test)
+        accuracy = accuracy_score(y_test, y_pred)
+
+        # Display results
+        st.metric(label="**Précision (Accuracy)**", value=f"{accuracy:.2%}")
+
+        # Rapport de classification
+        st.write("### Rapport de classification")
+        report = classification_report(y_test, y_pred, output_dict=True)
+        df_report = pd.DataFrame(report).transpose()
+        st.dataframe(df_report.style.format({"precision": "{:.2f}", "recall": "{:.2f}", "f1-score": "{:.2f}"}))
+
+        # Matrice de confusion
+        st.write("### Matrice de confusion")
+        fig, ax = plt.subplots(figsize=(5, 5))
+        ConfusionMatrixDisplay.from_estimator(model, X_test, y_test, ax=ax, cmap="Blues")
+        st.pyplot(fig)
+
+        # Visualisation de l'arbre
+        st.write("### Visualisation de l'Arbre de Décision")
+        fig, ax = plt.subplots(figsize=(10, 6))
+        plot_tree(model, feature_names=X.columns, class_names=model.classes_.astype(str), filled=True, ax=ax)
+        st.pyplot(fig)   
+            
 #Classification page in streamlit   
 def classification_page():
     st.header("Classification")
@@ -204,7 +248,7 @@ def classification_page():
 
     options = st.sidebar.selectbox(
         "Choisissez un modèle",
-        ["","Régression Logistique","Forêt Aléatoire","Validation Croisée_Forêt Aléatoire" ,"Arbre de Décision", "Réseau de Neurones"], 
+        ["","Régression Logistique","Forêt Aléatoire","Validation Croisée_Forêt Aléatoire" ,"Arbre de Décision", "Tensorflow"], 
         format_func=lambda x: "Sélectionnez un modèle" if x == "" else x,
     )
 
@@ -214,5 +258,6 @@ def classification_page():
         random_forest_model()
     elif options == "Validation Croisée_Forêt Aléatoire":
         cross_validation_random_forest()
-    
-    
+    elif options == "Arbre de Décision":
+        decision_tree_model()
+   
