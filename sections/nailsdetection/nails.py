@@ -41,7 +41,7 @@ def annotate_image(image, predictions, MinConfidence):
 
             # Dessiner le rectangle et ajouter le label
             draw.rectangle([x_min, y_min, x_max, y_max], outline=color, width=3)
-            draw.text((x_max, y_min), f"{label}\n({confidence:.2f})", fill=color, font=ImageFont.truetype("arial.ttf", height/2))
+            draw.text((x_max, y_min), f"{label}\n({confidence:.2f})", fill=color, font=ImageFont.truetype("data/arial.ttf", height/2))
 
     return image
 
