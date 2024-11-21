@@ -73,12 +73,11 @@ def logistic_regression_model():
         st.dataframe(df_report.style.format({"precision": "{:.2f}", "recall": "{:.2f}", "f1-score": "{:.2f}"}))
 
         # Matrice de confusion
-        st.write("### Matrice de confusion")
         conf_matrix = confusion_matrix(y_test, y_pred)
         fig, ax = plt.subplots(figsize=(5, 5))
         sns.heatmap(conf_matrix, annot=True, fmt='d', cmap="Blues", cbar=False, ax=ax)
-        ax.set_xlabel("Prédictions", fontsize=12)
-        ax.set_ylabel("Valeurs réelles", fontsize=12)
+        ax.set_xlabel("Prédictions", fontsize=10)
+        ax.set_ylabel("Valeurs réelles", fontsize=10)
         ax.set_title("Matrice de confusion", fontsize=14)
         st.pyplot(fig)
 
@@ -108,43 +107,49 @@ def random_forest_model():
         # Display the results
         st.metric(label="**Précision (Accuracy)**", value=f"{accuracy:.2%}")
 
-        # Rapport de classification
-        st.write("### Rapport de classification")
-        report = classification_report(y_test, y_pred, output_dict=True)
-        df_report = pd.DataFrame(report).transpose()
-        st.dataframe(df_report.style.format({"precision": "{:.2f}", "recall": "{:.2f}", "f1-score": "{:.2f}"}))
+        row1Col1,row1Col2 = st.columns(2)
+        with row1Col1:
+            # Rapport de classification
+            st.write("### Rapport de classification")
+            report = classification_report(y_test, y_pred, output_dict=True)
+            df_report = pd.DataFrame(report).transpose()
+            st.dataframe(df_report.style.format({"precision": "{:.2f}", "recall": "{:.2f}", "f1-score": "{:.2f}"}))
 
-        # Matrice de confusion
-        st.write("### Matrice de confusion")
-        fig, ax = plt.subplots(figsize=(5, 5))
-        ConfusionMatrixDisplay.from_estimator(model, X_test, y_test, ax=ax, cmap="Blues")
-        st.pyplot(fig)
+        with row1Col2:
+            # Matrice de confusion
+            st.write("### Matrice de confusion")
+            fig, ax = plt.subplots(figsize=(5, 5))
+            ConfusionMatrixDisplay.from_estimator(model, X_test, y_test, ax=ax, cmap="Blues")
+            st.pyplot(fig)
 
-        # Feature importance charcterstics
-        st.write("**Importance des caractéristiques :**")
-        feature_importances = model.feature_importances_
-        features = X.columns
-        sorted_idx = feature_importances.argsort()
+        
+        row2Col1,row2Col2 = st.columns(2)
+        with row2Col1:
+            # Feature importance charcterstics
+            st.write("**Importance des caractéristiques :**")
+            feature_importances = model.feature_importances_
+            features = X.columns
+            sorted_idx = feature_importances.argsort()
+            fig, ax = plt.subplots(figsize=(7, 5))
+            ax.barh(features[sorted_idx], feature_importances[sorted_idx], color='green')
+            ax.set_xlabel("Importance")
+            ax.set_title("Importance des caractéristiques")
+            st.pyplot(fig)
 
-        fig, ax = plt.subplots(figsize=(7, 5))
-        ax.barh(features[sorted_idx], feature_importances[sorted_idx], color='green')
-        ax.set_xlabel("Importance")
-        ax.set_title("Importance des caractéristiques")
-        st.pyplot(fig)
+        with row2Col2:
+            # Precision by class
+            st.write("**Précision par classe :**")
+            class_report = classification_report(y_test, y_pred, output_dict=True)
+            precision = [class_report[str(i)]['precision'] for i in range(len(class_report) - 3)]  # exclude the accuracy, macro avg, and weighted avg
+            labels = [f"Classe {i}" for i in range(len(precision))]
 
+            fig, ax = plt.subplots(figsize=(7, 5))
+            ax.bar(labels, precision, color='blue')
+            ax.set_xlabel("Classe")
+            ax.set_ylabel("Précision")
+            ax.set_title("Précision par Classe")
+            st.pyplot(fig)
 
-        # Precision by class
-        st.write("**Précision par classe :**")
-        class_report = classification_report(y_test, y_pred, output_dict=True)
-        precision = [class_report[str(i)]['precision'] for i in range(len(class_report) - 3)]  # exclude the accuracy, macro avg, and weighted avg
-        labels = [f"Classe {i}" for i in range(len(precision))]
-
-        fig, ax = plt.subplots(figsize=(7, 5))
-        ax.bar(labels, precision, color='blue')
-        ax.set_xlabel("Classe")
-        ax.set_ylabel("Précision")
-        ax.set_title("Précision par Classe")
-        st.pyplot(fig)
 
 def cross_validation_random_forest():
     """Validation croisée pour une Forêt Aléatoire"""
@@ -165,6 +170,7 @@ def cross_validation_random_forest():
         # Applicate  5-fold cross-validation
         scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')
 
+        row1col1, row1col2 = st.columns(2)
         # Display results
         results_df = pd.DataFrame({
             "Fold": [f"Fold {i+1}" for i in range(len(scores))],
@@ -172,10 +178,13 @@ def cross_validation_random_forest():
         })
         average_accuracy = scores.mean()
         std_dev_accuracy = scores.std()
-        st.dataframe(results_df)
-        st.write(f"**Average Accuracy:** {average_accuracy:.2%}")
-        st.write(f"**Std Accurancy:** {std_dev_accuracy:.2%}")
         
+        with row1col1:
+            st.dataframe(results_df)
+        with row1col2:
+            st.write(f"**Average Accuracy:** {average_accuracy:.2%}")
+            st.write(f"**Std Accurancy:** {std_dev_accuracy:.2%}")
+            
          # Plot of the scores
         st.write("### Accuracy per Fold")
         fig, ax = plt.subplots()

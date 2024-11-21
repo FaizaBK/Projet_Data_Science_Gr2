@@ -380,6 +380,7 @@ def cross_validation_linear():
         ax_mse.set_title('Comparison of MSE Scores: Cross-Validation, Test, and Train Sets')
         ax_mse.legend()
         st.pyplot(fig_mse)
+        
     with row1Col2:
         # Plotting R² : Cross-Validation vs Test and train results
         fig_r2, ax_r2 = plt.subplots(figsize=(10, 6))

@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 st.header("Bienvenue sur notre projet de Data Science")
-st.sidebar.link_button("Got to repo", "https://github.com/FaizaBK/Projet_Data_Science_Gr2")
+st.sidebar.link_button("Got to Github", "https://github.com/FaizaBK/Projet_Data_Science_Gr2")
 
 type_data = st.sidebar.radio(
     "Choisissez votre type de playground",
