@@ -196,7 +196,7 @@ def classification_page():
 
     options = st.sidebar.selectbox(
         "Choisissez un modèle",
-        ["Régression Logistique","Forêt Aléatoire","Validation Croisée_Forêt Aléatoire" ,"Arbre de Décision", "Réseau de Neurones"], 
+        ["","Régression Logistique","Forêt Aléatoire","Validation Croisée_Forêt Aléatoire" ,"Arbre de Décision", "Réseau de Neurones"], 
         format_func=lambda x: "Sélectionnez un modèle" if x == "" else x,
     )
 
